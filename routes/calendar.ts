@@ -43,7 +43,7 @@ router.get(
       console.log(`Time zone: ${timeZoneId.valueOf()}`);
 
       const weekStart = zonedTimeToUtc(
-        dateFns.startOfWeek(new Date()),
+        startOfWeek(new Date()),
         timeZoneId.valueOf(),
       );
       const weekEnd = dateFns.addDays(weekStart, 7);
