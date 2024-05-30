@@ -36,9 +36,18 @@ router.get(
       };
 
       const user = req.app.locals.users[req.session.userId];
+      const timeZoneId = iana.findIana(user.timeZone)[0];
+      console.log(`Time zone: ${timeZoneId.valueOf()}`);
+      const user = req.app.locals.users[req.session.userId];
       const timeZoneId = findIana(user.timeZone)[0];
       console.log(`Time zone: ${timeZoneId.valueOf()}`);
 
+      const weekStart = zonedTimeToUtc(
+        dateFns.startOfWeek(new Date()),
+        timeZoneId.valueOf(),
+      );
+      const weekEnd = dateFns.addDays(weekStart, 7);
+      console.log(`Start: ${dateFns.formatISO(weekStart)}`);
       const weekStart = zonedTimeToUtc(
         startOfWeek(new Date()),
         timeZoneId.valueOf(),
@@ -46,6 +55,14 @@ router.get(
       const weekEnd = addDays(weekStart, 7);
       console.log(`Start: ${formatISO(weekStart)}`);
 
+      try {
+        const events = await getCalendarView(
+          req.app.locals.msalClient,
+          req.session.userId,
+          dateFns.formatISO(weekStart),
+          dateFns.formatISO(weekEnd),
+          user.timeZone,
+        );
       try {
         const events = await getCalendarView(
           req.app.locals.msalClient,
